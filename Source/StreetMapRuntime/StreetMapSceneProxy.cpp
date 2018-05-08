@@ -70,14 +70,22 @@ void FStreetMapVertexFactory::InitVertexFactory( const FStreetMapVertexBuffer& V
 											   });
 }
 
-
-FStreetMapSceneProxy::FStreetMapSceneProxy(const UStreetMapComponent* InComponent)
-	: FPrimitiveSceneProxy(InComponent),
-	StreetMapComp(InComponent),
-	CollisionResponse(InComponent->GetCollisionResponseToChannels())
-{
-
-}
+#if ENGINE_MINOR_VERSION >= 19
+    FStreetMapSceneProxy::FStreetMapSceneProxy(const UStreetMapComponent* InComponent)
+        : FPrimitiveSceneProxy(InComponent),
+        VertexFactory(GetScene().GetFeatureLevel(), "StreetMap"),
+        StreetMapComp(InComponent),
+        CollisionResponse(InComponent->GetCollisionResponseToChannels())
+    {
+    }
+#else
+    FStreetMapSceneProxy::FStreetMapSceneProxy(const UStreetMapComponent* InComponent)
+        : FPrimitiveSceneProxy(InComponent),
+        StreetMapComp(InComponent),
+        CollisionResponse(InComponent->GetCollisionResponseToChannels())
+    {
+    }
+#endif
 
 
 void FStreetMapSceneProxy::Init( const UStreetMapComponent* InComponent, const TArray< FStreetMapVertex >& Vertices, const TArray< uint16 >& Indices )

@@ -3,7 +3,9 @@
 
 #include "Runtime/Engine/Public/PrimitiveSceneProxy.h"
 #include "Runtime/Engine/Public/LocalVertexFactory.h"
+#include "Runtime/Launch/Resources/Version.h"
 #include "StreetMapSceneProxy.generated.h"
+
 
 /**	A single vertex on a street map mesh */
 USTRUCT()
@@ -88,6 +90,14 @@ class FStreetMapVertexFactory : public FLocalVertexFactory
 {
 
 public:
+    
+    /** Constructor */
+    #if ENGINE_MINOR_VERSION >= 19
+        FStreetMapVertexFactory(ERHIFeatureLevel::Type InFeatureLevel, const char* InDebugName, const FStaticMeshDataType* InStaticMeshDataType = nullptr)
+                :FLocalVertexFactory(InFeatureLevel, InDebugName, InStaticMeshDataType)
+        {
+        }
+    #endif
 
 	/** Initialize this vertex factory */
 	void InitVertexFactory( const FStreetMapVertexBuffer& VertexBuffer );
@@ -123,6 +133,15 @@ public:
 
 	/** Destructor that cleans up our rendering data */
 	virtual ~FStreetMapSceneProxy();
+    
+    
+    #if ENGINE_MINOR_VERSION >= 19
+        SIZE_T GetTypeHash() const override
+        {
+            static size_t UniquePointer;
+            return reinterpret_cast<size_t>(&UniquePointer);
+        }
+    #endif
 
 
 protected:
@@ -149,7 +168,6 @@ protected:
 	virtual uint32 GetMemoryFootprint(void) const override;
 	virtual FPrimitiveViewRelevance GetViewRelevance(const class FSceneView* View) const override;
 	virtual bool CanBeOccluded() const override;
-
 
 
 protected:
